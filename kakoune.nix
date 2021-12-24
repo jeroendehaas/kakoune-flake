@@ -25,7 +25,7 @@ in {
 
       define-command -docstring "Set appropriate color scheme for interface style" \
         fix-colorscheme %{
-          %sh{
+          evaluate-commands %sh{
               if command -v defaults >/dev/null; then
                 if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
                     printf 'source %s' "${pkgs.extraKakounePlugins.kakoune-dracula}/share/kak/autoload/plugins/kakoune-dracula/colors/dracula.kak"
