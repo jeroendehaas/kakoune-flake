@@ -86,7 +86,7 @@ in {
           { key = "n"; effect=":spell-next<ret>"; docstring="Next"; }
           { key = "a"; effect=":spell-add<ret>"; docstring="Learn word"; }
         ])
-        (user-mode { name = "select-um"; key = "v"; docstring = "Select..."; } [
+        (user-mode { outermode="normal"; name = "select-um"; key = "v"; docstring = "Select..."; } [
           { key = "a"; effect="<a-a>"; docstring ="Around"; }
           { key = "A"; effect="<a-A>"; docstring ="Around (extend)"; }
           { key = "i"; effect="<a-i>"; docstring="Inside"; }
@@ -108,6 +108,8 @@ in {
         { docstring = "single selection"; effect = "<space>"; key = "<backspace>"; mode = "normal"; }
         { docstring = "LSP..."; key = "l"; mode = "user"; effect = ": enter-user-mode lsp<ret>"; }
         { mode = "normal"; key = "\"'\""; effect=": enter-user-mode -lock mirror<ret>"; }
+        { mode = "user"; key = "v"; effect="v"; docstring="View..."}
+        { mode = "user"; key = "V"; effect="V"; docstring="View (lock)..."}
       ];
     };
   };
