@@ -108,8 +108,8 @@ in {
         { docstring = "single selection"; effect = "<space>"; key = "<backspace>"; mode = "normal"; }
         { docstring = "LSP..."; key = "l"; mode = "user"; effect = ": enter-user-mode lsp<ret>"; }
         { mode = "normal"; key = "\"'\""; effect=": enter-user-mode -lock mirror<ret>"; }
-        { mode = "user"; key = "v"; effect="v"; docstring="View..."}
-        { mode = "user"; key = "V"; effect="V"; docstring="View (lock)..."}
+        { mode = "user"; key = "v"; effect="v"; docstring="View..."; }
+        { mode = "user"; key = "V"; effect="V"; docstring="View (lock)..."; }
       ];
     };
   };
