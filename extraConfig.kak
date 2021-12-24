@@ -28,3 +28,15 @@ define-command -hidden git-hunk-apply-impl -params 1 %{ evaluate-commands -draft
   } # NOTE: | register is used by default when no command is specified below
   execute-keys |<ret>
 }}
+
+define-command mgit -override -params .. %{
+  evaluate-commands -save-regs ab %{
+    set-register a %sh{ pwd }
+    change-directory %sh{ dirname "${kak_buffile}" }
+
+    git %arg{@}
+
+    change-directory %reg{a}
+  }
+}
+
