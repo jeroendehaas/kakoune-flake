@@ -108,7 +108,7 @@ in {
           { key = "c"; effect=":mgit commit<ret>"; docstring = "Commit"; }
           { key = "l"; effect=":mgit log<ret>"; docstring = "Log"; }
           { key = "d"; effect=":mgit diff<ret>"; docstring = "Diff"; }
-          { key = "s"; effect=":mgit diff<ret>"; docstring = "Status"; }
+          { key = "s"; effect=":mgit status<ret>"; docstring = "Status"; }
         ])
         { docstring = "leader key"; effect = ","; key = "<space>"; mode = "normal"; }
         { docstring = "FZF"; effect = ": fzf-mode<ret>"; key = "<c-p>"; mode = "normal"; }
