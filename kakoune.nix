@@ -26,10 +26,12 @@ in {
       define-command -docstring "Set appropriate color scheme for interface style" \
         fix-colorscheme %{
           source %sh{
-              if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
-                  printf '%s' "${pkgs.myKakounePlugins.kakoune-dracula}/share/kak/autoload/plugins/kakoune-dracula/colors/dracula.kak"
-              else
-                  printf '%s' "${pkgs.myKakounePlugins.kakoune-one}/share/kak/autoload/plugins/kakoune-one/colors/one-light.kak"
+              if command -v defaults >/dev/null; then
+                if defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
+                    printf '%s' "${pkgs.extraKakounePlugins.kakoune-dracula}/share/kak/autoload/plugins/kakoune-dracula/colors/dracula.kak"
+                else
+                    printf '%s' "${pkgs.extraKakounePlugins.kakoune-one}/share/kak/autoload/plugins/kakoune-one/colors/one-light.kak"
+                fi
               fi
           }
         }
