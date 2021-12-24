@@ -36,7 +36,8 @@ in {
           }
         }
       fix-colorscheme
-    '';
+
+    '' + (builtins.readFile ./extraConfig.kak);
     config = {
       hooks = [
         (indentwidth 2 ["cpp" "c" "latex" "markdown" "nix" "css" "html" "javascript" "haskell" "idris"])
@@ -52,7 +53,6 @@ in {
         }
         (winSetOption ["latex" "markdown"] ''
           add-highlighter window/ wrap -word -indent -width 78 -marker '^   '
-          set-option window indentwidth 2
           set-option window lintcmd '${pkgs.proselint}/bin/proselint'
           hook -group my-markdown-hooks window BufWritePost .* %{
             spell
