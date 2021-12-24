@@ -13,7 +13,9 @@ let
   indentwidth = width: filetypes: (winSetOption filetypes ''
     set-option window indentwidth ${builtins.toString width}
   '');
+  kak-lsp-toml = import ./kak-lsp.nix { inherit config pkgs; };
 in {
+
   programs.kakoune = {
     enable = true;
     plugins = (with pkgs.kakounePlugins; [
@@ -21,7 +23,7 @@ in {
       kak-fzf
     ]) ++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one   ]);
     extraConfig = ''
-      eval %sh{${pkgs.kak-lsp}/bin/kak-lsp --kakoune -s $kak_session}
+      eval %sh{${pkgs.kak-lsp}/bin/kak-lsp --kakoune -s $kak_session -c ${kak-lsp-toml}}
 
       define-command -docstring "Set appropriate color scheme for interface style" \
         fix-colorscheme %{
