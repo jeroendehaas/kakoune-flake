@@ -5,6 +5,7 @@
     kakoune-mirror = { url ="github:delapouite/kakoune-mirror"; flake = false; };
     kakoune-dracula = { url = "github:dracula/kakoune"; flake = false; };
     kakoune-one = { url = "github:raiguard/one.kak"; flake = false; };
+    kakoune-idris2 = { url = "github:jeroendehaas/idris2.kak"; flake = false; };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: rec {

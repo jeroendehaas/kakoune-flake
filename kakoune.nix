@@ -34,7 +34,7 @@ in {
         (with pkgs.kakounePlugins; [
           kak-fzf
         ])
-        ++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one   ])
+        ++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one kakoune-idris2 ])
         ++ (optional cfg.enableLsp pkgs.kakounePlugins.kak-lsp);
       extraConfig =
         let
@@ -56,7 +56,7 @@ in {
         '' + (builtins.readFile ./extraConfig.kak);
       config = {
         hooks = [
-          (indentwidth 2 ["cpp" "c" "latex" "markdown" "nix" "css" "html" "javascript" "haskell" "idris"])
+          (indentwidth 2 ["cpp" "c" "latex" "markdown" "nix" "css" "html" "javascript" "haskell" "idris2"])
           (indentwidth 4 ["python"])
           {
             name = "InsertChar";
@@ -76,6 +76,12 @@ in {
           '')
           (winSetOption ["html"] ''
               set-option buffer formatcmd "${pkgs.htmlTidy}/bin/tidy"
+          '')
+          (winSetOption ["idris2"] ''
+            add-highlighter window/ number-lines -min-digits 4
+            hook window InsertChar \n -group my-idris2-indent idris2-newline
+            hook window InsertDelete ' ' -group my-idris2-indent idris2-delete
+            hook -once -always window WinSetOption filetype=.* %{ remove-hooks window my-idris2-.* }
           '')
           (winSetOption ["latex" "cpp" "c"] ''
             add-highlighter window/ number-lines -min-digits 4
