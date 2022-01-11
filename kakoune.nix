@@ -17,46 +17,92 @@ let
   cfg = config.qqlq.kakoune;
 in {
   options = {
-    qqlq.kakoune = {
-      enableLsp = mkEnableOption "Enable LSP's for Kakoune";
-      enableLspFor = mkOption {
-        type = types.listOf (types.enum ["idris2" "cpp"]);
-        default = [];      
-        example = ["idris2"];
+    qqlq.kakoune = with types; {
+      lsp = mkOption {
+        type = submodule {
+          options = {
+            enable = mkEnableOption "Enable kak-lsp";
+            filetypes = mkOption {
+              type = listOf str;
+              default = [];
+              example = ["idris" "cpp"];
+            };
+          };
+        };
+      };
+      colorscheme = mkOption {
+        type = either str (submodule { options = {
+                            dark = mkOption {
+                              type = str;
+                              example = "solarized-dark";
+                            };
+                            light = mkOption {
+                              type = str;
+                              example = "solarized-light";
+                            };
+                            fallback = mkOption {
+                              type = str;
+                              example = "solarized-dark";
+                            };
+                            extraColorschemes = mkOption {
+                              type = listOf package;
+                            };
+                          };});
+        default = null;
+        example = "solarized-dark";
+      };
+      lightColorscheme = mkOption {
+        type = nullOr str;
+        default = null;
+        example = "solarized-light";
       };
     };
   };
 
   config = {
+    xdg = lib.mkIf ((builtins.length cfg.colorscheme.extraColorschemes) > 0) {
+      configFile."kak/colors".source = pkgs.symlinkJoin {
+        name = "kak-colors";
+        paths = cfg.colorscheme.extraColorschemes;
+      };
+    };
     programs.kakoune = {
       enable = true;
       plugins =
         (with pkgs.kakounePlugins; [
-          kak-fzf
+          kakoune-mirror
+          kakoune-idris2
         ])
-        ++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one kakoune-idris2 ])
-        ++ (optional cfg.enableLsp pkgs.kakounePlugins.kak-lsp);
+        #++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one kakoune-idris2 ])
+        ++ (optional cfg.lsp.enable pkgs.kakounePlugins.kak-lsp);
       extraConfig =
         let
           toml = pkgs.writeTextFile { name = "kak-lsp.toml"; text = (builtins.readFile ./kak-lsp.toml); };
+          fixColorscheme =
+            if builtins.isString cfg.colorscheme
+            then ''printf '%s' "${cfg.colorscheme}"''
+            else ''
+                  if ! command -v defaults > /dev/null; then
+                    printf '%s' "${cfg.colorscheme.fallback}"
+                  elif defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
+                    printf '%s' "${cfg.colorscheme.dark}"
+                  else
+                    printf '%s' "${cfg.colorscheme.light}"
+                  fi
+            '';
         in ''
-          ${optionalString cfg.enableLsp "eval %sh{${pkgs.kak-lsp}/bin/kak-lsp --kakoune -s $kak_session -c ${toml}}"}
-
+          ${optionalString cfg.lsp.enable "eval %sh{${pkgs.kak-lsp}/bin/kak-lsp --kakoune -s $kak_session -c ${toml} -vvv --log $HOME/kak-lsp.log}"}
           define-command -docstring "Set appropriate color scheme for interface style" \
             fix-colorscheme %{
-              evaluate-commands %sh{
-                  if ! command -v defaults >/dev/null || defaults read -g AppleInterfaceStyle >/dev/null 2>&1; then
-                    printf 'source %s\n' "${pkgs.extraKakounePlugins.kakoune-dracula}/share/kak/autoload/plugins/kakoune-dracula/colors/dracula.kak"
-                  else
-                    printf 'source %s' "${pkgs.extraKakounePlugins.kakoune-one}/share/kak/autoload/plugins/kakoune-one/colors/one-light.kak"
-                  fi
+              colorscheme %sh{
+                  ${fixColorscheme}
               }
             }
           fix-colorscheme
         '' + (builtins.readFile ./extraConfig.kak);
       config = {
         hooks = [
-          (indentwidth 2 ["cpp" "c" "latex" "markdown" "nix" "css" "html" "javascript" "haskell" "idris2"])
+          (indentwidth 2 ["cpp" "c" "latex" "markdown" "nix" "css" "html" "javascript" "haskell" "idris"])
           (indentwidth 4 ["python"])
           {
             name = "InsertChar";
@@ -77,16 +123,16 @@ in {
           (winSetOption ["html"] ''
               set-option buffer formatcmd "${pkgs.htmlTidy}/bin/tidy"
           '')
-          (winSetOption ["idris2"] ''
+          (winSetOption ["idris"] ''
             add-highlighter window/ number-lines -min-digits 4
-            hook window InsertChar \n -group my-idris2-indent idris2-newline
-            hook window InsertDelete ' ' -group my-idris2-indent idris2-delete
+            hook window InsertChar \n -group my-idris-indent idris-newline
+            hook window InsertDelete ' ' -group my-idris-indent idris-delete
             hook -once -always window WinSetOption filetype=.* %{ remove-hooks window my-idris2-.* }
           '')
           (winSetOption ["latex" "cpp" "c"] ''
             add-highlighter window/ number-lines -min-digits 4
           '')
-          (winSetOption cfg.enableLspFor ''
+          (winSetOption cfg.lsp.filetypes ''
             lsp-enable-window
             lsp-auto-hover-enable
           '')

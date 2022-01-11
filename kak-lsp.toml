@@ -13,8 +13,8 @@ roots = [".git", ".hg"]
 command = "bash-language-server"
 args = ["start"]
 
-[language.idris2]
-filetypes = ["idris2"]
+[language.idris]
+filetypes = ["idris"]
 roots = [".git", ".pijul", "*.ipkg"]
 command = "idris2-lsp"
 
