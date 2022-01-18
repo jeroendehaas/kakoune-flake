@@ -70,8 +70,11 @@ in {
       enable = true;
       plugins =
         (with pkgs.kakounePlugins; [
+          kak-fzf
           kakoune-mirror
           kakoune-idris2
+          kakoune-rainbow
+          kakoune-kaktree
         ])
         #++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one kakoune-idris2 ])
         ++ (optional cfg.lsp.enable pkgs.kakounePlugins.kak-lsp);
@@ -99,6 +102,9 @@ in {
               }
             }
           fix-colorscheme
+
+          require-module rainbow
+          kaktree-enable
         '' + (builtins.readFile ./extraConfig.kak);
       config = {
         hooks = [
@@ -135,6 +141,12 @@ in {
           (winSetOption cfg.lsp.filetypes ''
             lsp-enable-window
             lsp-auto-hover-enable
+          '')
+          (winSetOption ["kaktree"] ''
+            remove-highlighter buffer/numbers
+            remove-highlighter buffer/matching
+            remove-highlighter buffer/wrap
+            remove-highlighter buffer/show-whitespaces
           '')
         ];
         keyMappings = lib.flatten [
@@ -184,10 +196,14 @@ in {
           { docstring = "FZF"; effect = ": fzf-mode<ret>"; key = "<c-p>"; mode = "normal"; }
           { docstring = "single selection"; effect = "<space>"; key = "<backspace>"; mode = "normal"; }
           { docstring = "LSP..."; key = "l"; mode = "user"; effect = ": enter-user-mode lsp<ret>"; }
+          { docstring = "Rainbow on"; key = "r"; mode = "user"; effect = ": rainbow<ret>"; }
+          { docstring = "Rainbow off"; key = "R"; mode = "user"; effect = ": rmhl window/ranges_rainbow_specs<ret>"; }
           { mode = "normal"; key = "\"'\""; effect=": enter-user-mode -lock mirror<ret>"; }
           { mode = "user"; key = "v"; effect="v"; docstring="View..."; }
           { mode = "user"; key = "V"; effect="V"; docstring="View (lock)..."; }
-        ];
+        ] ++ (lib.optionals pkgs.stdenv.isDarwin [
+          { mode = "normal"; key = "y"; effect="<a-|>pbcopy<ret>y"; }
+        ]);
       };
     };
   };

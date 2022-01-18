@@ -4,6 +4,7 @@
     home-manager = { url = "github:nix-community/home-manager"; inputs.nixpkgs.follows = "nixpkgs"; };
     kakoune-mirror = { url ="github:delapouite/kakoune-mirror"; flake = false; };
     kakoune-idris2 = { url = "github:jeroendehaas/idris2.kak"; flake = false; };
+    kakoune-kaktree = { url = "github:andreyorst/kaktree"; flake = false; };
     kakounecs-dracula = { url = "github:dracula/kakoune"; flake = false; };
   };
 
