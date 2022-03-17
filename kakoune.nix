@@ -74,6 +74,8 @@ in {
           kakoune-mirror
           kakoune-idris2
           kakoune-rainbow
+          connect-kak # required for kakoune-rainbow
+          prelude-kak # required for connect-kak
           kakoune-kaktree
         ])
         #++ (with pkgs.extraKakounePlugins; [ kakoune-mirror kakoune-dracula kakoune-one kakoune-idris2 ])
@@ -127,7 +129,7 @@ in {
             }
           '')
           (winSetOption ["html"] ''
-              set-option buffer formatcmd "${pkgs.htmlTidy}/bin/tidy"
+              set-option buffer formatcmd "${pkgs.html-tidy}/bin/tidy"
           '')
           (winSetOption ["idris"] ''
             add-highlighter window/ number-lines -min-digits 4
@@ -192,8 +194,11 @@ in {
             { key = "d"; effect=":mgit diff<ret>"; docstring = "Diff"; }
             { key = "s"; effect=":mgit status<ret>"; docstring = "Status"; }
           ])
+          (user-mode { name = "open-um"; key = "o"; docstring = "Open..."; } [
+            { key = "t"; effect=": tmux-terminal-vertical %sh{ echo $SHELL }"; docstring = "Terminal"; }
+          ])
           { docstring = "leader key"; effect = ","; key = "<space>"; mode = "normal"; }
-          { docstring = "FZF"; effect = ": fzf-mode<ret>"; key = "<c-p>"; mode = "normal"; }
+          { docstring = "FZF"; effect =": fzf-mode<ret>"; key = "p"; mode = "user"; }
           { docstring = "single selection"; effect = "<space>"; key = "<backspace>"; mode = "normal"; }
           { docstring = "LSP..."; key = "l"; mode = "user"; effect = ": enter-user-mode lsp<ret>"; }
           { docstring = "Rainbow on"; key = "r"; mode = "user"; effect = ": rainbow<ret>"; }

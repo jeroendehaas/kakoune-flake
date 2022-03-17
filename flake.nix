@@ -15,7 +15,7 @@
           kakouneColorschemeNames = builtins.filter (lib.hasPrefix "kakounecs-") (builtins.attrNames inputs);
           buildKakounePlugin = pname: prev.kakouneUtils.buildKakounePlugin {
             inherit pname;
-            version = inputs."${pname}".rev;
+            version = builtins.toString inputs."${pname}".lastModified;
             src = inputs."${pname}";
           };
           buildKakouneColorscheme = pname: prev.stdenv.mkDerivation {
